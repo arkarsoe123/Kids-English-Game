@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids English Game</title>
+    <style>
+        /* ဒီနေရာက ဒီဇိုင်းပိုင်း (CSS) ပါ */
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #f0f8ff; /* အပြာနုရောင် နောက်ခံ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+            border: 5px solid #FFD700; /* ရွှေရောင်ဘောင် */
+        }
+        h1 {
+            color: #ff4500;
+            margin-bottom: 20px;
+        }
+        .score-board {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 24px;
+            color: #008080;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50; /* အစိမ်းရောင် ခလုတ် */
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>English Quiz 🦁</h1>
+        <div class="score-board">အမှတ်: <span id="score">0</span></div>
+        
+        <div class="question" id="question-text">မေးခွန်း လာပါမည်...</div>
+        
+        <div class="options" id="options-container">
+            </div>
+
+        <div class="result" id="result-text"></div>
+    </div>
+
+    <script>
+        // ဒီနေရာက လုပ်ဆောင်ချက်ပိုင်း (JavaScript) ပါ
+        
+        // မေးခွန်းများ (လိုသလောက် ထပ်ထည့်နိုင်ပါတယ်)
+        const questions = [
+            { question: "ပန်းသီး", answers: ["Apple", "Banana", "Grape"], correct: "Apple" },
+            { question: "ခွေး", answers: ["Cat", "Dog", "Bird"], correct: "Dog" },
+            { question: "အနီရောင်", answers: ["Blue", "Green", "Red"], correct: "Red" },
+            { question: "ကျောင်း", answers: ["School", "Home", "Park"], correct: "School" },
+            { question: "ရေ", answers: ["Fire", "Water", "Wind"], correct: "Water" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionText = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+        const scoreDisplay = document.getElementById("score");
+        const resultText = document.getElementById("result-text");
+
+        function loadQuestion() {
+            // မေးခွန်းကုန်သွားရင် ပြန်စမယ်
+            if (currentQuestionIndex >= questions.length) {
+                questionText.textContent = "ဂုဏ်ယူပါတယ်! ပြီးဆုံးပါပြီ။";
+                optionsContainer.innerHTML = `<button onclick="restartGame()">ပြန်လည်စတင်မည်</button>`;
+                return;
+            }
+
+            const currentQ = questions[currentQuestionIndex];
+            questionText.textContent = currentQ.question + " ကို အင်္ဂလိပ်လို ဘယ်လိုခေါ်လဲ?";
+            resultText.textContent = "";
+            optionsContainer.innerHTML = ""; // ခလုတ်ဟောင်းတွေကို ရှင်းမယ်
+
+            // အဖြေရွေးချယ်စရာ ခလုတ်များကို တည်ဆောက်ခြင်း
+            currentQ.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(answer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const currentQ = questions[currentQuestionIndex];
+            
+            if (selectedAnswer === currentQ.correct) {
+                score++;
+                scoreDisplay.textContent = score;
+                resultText.textContent = "✅ မှန်ပါတယ်! (" + currentQ.correct + ")";
+                resultText.style.color = "green";
+            } else {
+                resultText.textContent = "❌ မှားသွားတယ် (" + currentQ.correct + ")";
+                resultText.style.color = "red";
+            }
+
+            currentQuestionIndex++;
+            // နောက်မေးခွန်းမလာခင် ၁ စက္ကန့် စောင့်မယ်
+            setTimeout(loadQuestion, 1000);
+        }
+
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreDisplay.textContent = score;
+            loadQuestion();
+        }
+
+        // ဂိမ်းစတင်ခြင်း
+        loadQuestion();
+
+    </script>
+</body>
+</html>
