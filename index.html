@@ -3,151 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids English Game</title>
+    <title>Kids Visual English Game</title>
     <style>
-        /* ဒီနေရာက ဒီဇိုင်းပိုင်း (CSS) ပါ */
+        /* --- ဒီဇိုင်းပိုင်း (CSS) --- */
         body {
-            font-family: 'Comic Sans MS', sans-serif;
-            background-color: #f0f8ff; /* အပြာနုရောင် နောက်ခံ */
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            background-color: #e0f7fa; /* စိမ်းပြာနုရောင် နောက်ခံ */
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         .game-container {
-            background-color: white;
+            background-color: #fff;
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             text-align: center;
-            width: 300px;
-            border: 5px solid #FFD700; /* ရွှေရောင်ဘောင် */
+            width: 100%;
+            max-width: 350px; /* ဖုန်းနဲ့ကြည့်ရင် အဆင်ပြေအောင် */
+            border: 6px solid #FFB74D; /* လိမ္မော်ရောင်ဘောင် */
         }
         h1 {
-            color: #ff4500;
-            margin-bottom: 20px;
+            color: #FF5722;
+            margin: 0 0 20px 0;
+            font-size: 24px;
         }
         .score-board {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .question {
-            font-size: 24px;
-            color: #008080;
-            margin-bottom: 20px;
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 15px;
             font-weight: bold;
         }
-        .options {
+        /* ပုံပြမည့် နေရာ */
+        .image-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px auto;
+            background-color: #f0f0f0;
+            border-radius: 15px;
+            border: 3px solid #4DD0E1;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .question-text {
+            font-size: 22px;
+            color: #00838F;
+            margin-bottom: 25px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* နှစ်တိုင်ခွဲပြမည် */
+            gap: 15px;
         }
         button {
-            padding: 15px;
+            padding: 15px 10px;
             font-size: 18px;
-            border: none;
-            border-radius: 10px;
-            background-color: #4CAF50; /* အစိမ်းရောင် ခလုတ် */
-            color: white;
+            border: 3px solid #81C784;
+            border-radius: 15px;
+            background-color: #fff;
+            color: #333;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
+            background-color: #E8F5E9;
+            transform: scale(1.03);
         }
-        .result {
+        button:active {
+            transform: scale(0.98);
+        }
+        /* အဖြေမှန်/မှား အရောင်များ */
+        button.correct { background-color: #A5D6A7; border-color: #2E7D32; color: #1B5E20; }
+        button.wrong { background-color: #EF9A9A; border-color: #C62828; color: #B71C1C; }
+
+        .result-message {
+            height: 30px;
             margin-top: 20px;
             font-size: 20px;
             font-weight: bold;
-            height: 30px;
+            color: #FF9800;
         }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <h1>English Quiz 🦁</h1>
-        <div class="score-board">အမှတ်: <span id="score">0</span></div>
+        <h1>🌟 English Fun 🌟</h1>
+        <div class="score-board">⭐ Stars: <span id="score">0</span></div>
         
-        <div class="question" id="question-text">မေးခွန်း လာပါမည်...</div>
+        <div class="image-container">
+            <img id="question-image" src="" alt="Loading Image...">
+        </div>
+
+        <div class="question-text" id="question-text">...</div>
         
         <div class="options" id="options-container">
             </div>
-
-        <div class="result" id="result-text"></div>
+        <div class="result-message" id="result-message"></div>
     </div>
 
     <script>
-        // ဒီနေရာက လုပ်ဆောင်ချက်ပိုင်း (JavaScript) ပါ
-        
-        // မေးခွန်းများ (လိုသလောက် ထပ်ထည့်နိုင်ပါတယ်)
+        // --- လုပ်ဆောင်ချက်ပိုင်း (JavaScript) ---
+
+        // အသံထွက် ဖတ်ပေးမည့် Function (Browser ၏ Speech API ကို သုံးထားသည်)
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US'; // အင်္ဂလိပ် (အမေရိကန်) လေသံ
+                utterance.rate = 0.9; // စကားပြောနှုန်း အနည်းငယ်နှေးမည်
+                utterance.pitch = 1.1; // အသံ အနည်းငယ် မြှင့်မည် (ကလေးသံပေါက်အောင်)
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.log("Browser က အသံဖတ်စနစ် မထောက်ပံ့ပါ");
+            }
+        }
+
+        // မေးခွန်း ဒေတာများ (ပုံလင့်ခ်များပါ ထည့်သွင်းထားသည်)
+        // မှတ်ချက်: အင်တာနက်ရှိမှ ပုံများ ပေါ်ပါမည်။
         const questions = [
-            { question: "ပန်းသီး", answers: ["Apple", "Banana", "Grape"], correct: "Apple" },
-            { question: "ခွေး", answers: ["Cat", "Dog", "Bird"], correct: "Dog" },
-            { question: "အနီရောင်", answers: ["Blue", "Green", "Red"], correct: "Red" },
-            { question: "ကျောင်း", answers: ["School", "Home", "Park"], correct: "School" },
-            { question: "ရေ", answers: ["Fire", "Water", "Wind"], correct: "Water" }
+            { 
+                questionMy: "ဒါ ဘာပုံလေးလဲ?", 
+                imgUrl: "https://cdn-icons-png.flaticon.com/512/2936/2936866.png", // Apple Image
+                answers: [
+                    { word: "Apple 🍎", isCorrect: true },
+                    { word: "Banana 🍌", isCorrect: false },
+                    { word: "Car 🚗", isCorrect: false },
+                    { word: "Dog 🐶", isCorrect: false }
+                ]
+            },
+            { 
+                questionMy: "ဒီသတ္တဝါလေးက ဘာလဲ?", 
+                imgUrl: "https://cdn-icons-png.flaticon.com/512/2395/2395486.png", // Cat Image
+                answers: [
+                    { word: "Fish 🐟", isCorrect: false },
+                    { word: "Cat 🐱", isCorrect: true },
+                    { word: "Bird 🐦", isCorrect: false },
+                    { word: "Cow 🐮", isCorrect: false }
+                ]
+            },
+            { 
+                questionMy: "ဒါ ဘာအရောင်လဲ?", 
+                imgUrl: "https://cdn-icons-png.flaticon.com/512/3418/3418563.png", // Red Heart Image
+                answers: [
+                    { word: "Blue 🔵", isCorrect: false },
+                    { word: "Green 🟢", isCorrect: false },
+                    { word: "Red 🔴", isCorrect: true },
+                    { word: "Yellow 🟡", isCorrect: false }
+                ]
+            },
+            { 
+                questionMy: "ပုံထဲက အရာက ဘာလဲ?", 
+                imgUrl: "https://cdn-icons-png.flaticon.com/512/2889/2889317.png", // Ball Image
+                answers: [
+                    { word: "Book 📘", isCorrect: false },
+                    { word: "Ball ⚽", isCorrect: true },
+                    { word: "Sun ☀️", isCorrect: false },
+                    { word: "Tree 🌳", isCorrect: false }
+                ]
+            }
         ];
 
-        let currentQuestionIndex = 0;
+        let currentQIndex = 0;
         let score = 0;
+        let isAnswering = false; // အဖြေဖြေနေစဉ် ထပ်မနှိပ်ရအောင် ကာကွယ်ရန်
 
-        const questionText = document.getElementById("question-text");
-        const optionsContainer = document.getElementById("options-container");
-        const scoreDisplay = document.getElementById("score");
-        const resultText = document.getElementById("result-text");
+        const qImage = document.getElementById("question-image");
+        const qText = document.getElementById("question-text");
+        const optContainer = document.getElementById("options-container");
+        const scoreDisp = document.getElementById("score");
+        const resultMsg = document.getElementById("result-message");
 
         function loadQuestion() {
-            // မေးခွန်းကုန်သွားရင် ပြန်စမယ်
-            if (currentQuestionIndex >= questions.length) {
-                questionText.textContent = "ဂုဏ်ယူပါတယ်! ပြီးဆုံးပါပြီ။";
-                optionsContainer.innerHTML = `<button onclick="restartGame()">ပြန်လည်စတင်မည်</button>`;
+            isAnswering = false;
+            resultMsg.textContent = "";
+            
+            if (currentQIndex >= questions.length) {
+                showFinalScore();
                 return;
             }
 
-            const currentQ = questions[currentQuestionIndex];
-            questionText.textContent = currentQ.question + " ကို အင်္ဂလိပ်လို ဘယ်လိုခေါ်လဲ?";
-            resultText.textContent = "";
-            optionsContainer.innerHTML = ""; // ခလုတ်ဟောင်းတွေကို ရှင်းမယ်
+            const currentQ = questions[currentQIndex];
+            qImage.src = currentQ.imgUrl;
+            qText.textContent = currentQ.questionMy;
+            optContainer.innerHTML = "";
 
-            // အဖြေရွေးချယ်စရာ ခလုတ်များကို တည်ဆောက်ခြင်း
-            currentQ.answers.forEach(answer => {
-                const button = document.createElement("button");
-                button.textContent = answer;
-                button.onclick = () => checkAnswer(answer);
-                optionsContainer.appendChild(button);
+            // အဖြေများကို နေရာမကျအောင် မွှေမည် (Shuffle)
+            const shuffledAnswers = [...currentQ.answers].sort(() => Math.random() - 0.5);
+
+            shuffledAnswers.forEach(ans => {
+                const btn = document.createElement("button");
+                btn.innerHTML = ans.word; // Emoji ပါအောင် innerHTML သုံးသည်
+                
+                btn.onclick = () => {
+                    if (isAnswering) return; // ဖြေနေတုန်းဆို ဘာမှမလုပ်နဲ့
+                    handleAnswerClick(btn, ans);
+                };
+                optContainer.appendChild(btn);
             });
         }
 
-        function checkAnswer(selectedAnswer) {
-            const currentQ = questions[currentQuestionIndex];
-            
-            if (selectedAnswer === currentQ.correct) {
+        function handleAnswerClick(selectedBtn, answerData) {
+            isAnswering = true;
+            // ၁။ စကားလုံးကို အသံထွက် ဖတ်ပြမည် (Emoji တွေကို ဖယ်ထုတ်ပြီးမှ ဖတ်မယ်)
+            const wordToSpeak = answerData.word.replace(/[\u{1F300}-\u{1F9FF}]/gu, '');
+            speakWord(wordToSpeak);
+
+            // ၂။ အဖြေမှန်/မှား စစ်ဆေးမည်
+            if (answerData.isCorrect) {
                 score++;
-                scoreDisplay.textContent = score;
-                resultText.textContent = "✅ မှန်ပါတယ်! (" + currentQ.correct + ")";
-                resultText.style.color = "green";
+                scoreDisp.textContent = score;
+                selectedBtn.classList.add("correct");
+                resultMsg.textContent = "🎉 Correct!";
             } else {
-                resultText.textContent = "❌ မှားသွားတယ် (" + currentQ.correct + ")";
-                resultText.style.color = "red";
+                selectedBtn.classList.add("wrong");
+                resultMsg.textContent = "😅 Try Again!";
+                // အဖြေမှန်ကိုပါ အရောင်စိမ်း ပြလိုက်မယ်
+                Array.from(optContainer.children).forEach(btn => {
+                    // Emoji ဖြုတ်ပြီး ပြန်စစ် (နည်းနည်းရှုပ်သွားနိုင်တယ်)
+                   const btnWord = btn.textContent.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+                   const correctWord = questions[currentQIndex].answers.find(a => a.isCorrect).word.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+                   if(btnWord === correctWord) {
+                       btn.classList.add("correct");
+                   }
+                });
             }
 
-            currentQuestionIndex++;
-            // နောက်မေးခွန်းမလာခင် ၁ စက္ကန့် စောင့်မယ်
-            setTimeout(loadQuestion, 1000);
+            // ၃။ ၁.၅ စက္ကန့်ကြာမှ နောက်မေးခွန်းကို သွားမည်
+            setTimeout(() => {
+                currentQIndex++;
+                loadQuestion();
+            }, 1500);
         }
 
-        function restartGame() {
-            currentQuestionIndex = 0;
-            score = 0;
-            scoreDisplay.textContent = score;
-            loadQuestion();
+        function showFinalScore() {
+            qImage.style.display = "none";
+            qText.style.display = "none";
+            optContainer.innerHTML = `
+                <h2>Game Over! 🎉</h2>
+                <p style="font-size: 24px;">Your Score: ${score} / ${questions.length}</p>
+                <button onclick="location.reload()" style="background-color: #FFD700; grid-column: span 2;">Play Again 🔄</button>
+            `;
         }
 
-        // ဂိမ်းစတင်ခြင်း
+        // ဂိမ်းစမယ်
         loadQuestion();
 
     </script>
