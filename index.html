@@ -1,103 +1,180 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids English Learning</title>
-    <style>
-        body { font-family: sans-serif; background-color: #e0f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .game-container { background: white; padding: 20px; border-radius: 20px; text-align: center; width: 320px; border: 5px solid #FFB74D; position: relative; }
-        .image-box { width: 150px; height: 150px; margin: 10px auto; border: 2px solid #ddd; border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .image-box img { max-width: 100%; height: auto; }
-        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        button { padding: 12px; font-size: 16px; border-radius: 10px; border: 2px solid #81C784; background: white; cursor: pointer; }
-        #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 20px; z-index: 10; }
-        .btn-start { background: #FF5722; color: white; padding: 15px 30px; border: none; font-size: 20px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids English Learning</title>
+<style>
+body {
+    font-family: sans-serif;
+    background-color: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+.game-container {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    width: 320px;
+    border: 5px solid #FFB74D;
+    position: relative;
+}
+.image-box {
+    width: 150px;
+    height: 150px;
+    margin: 10px auto;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.image-box img {
+    max-width: 100%;
+}
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+button {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 2px solid #81C784;
+    background: white;
+}
+#start-screen {
+    position: absolute;
+    inset: 0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    z-index: 10;
+}
+.btn-start {
+    background: #FF5722;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    font-size: 20px;
+}
+</style>
 </head>
+
 <body>
 
-<div class="game-container">
+<div class="game-container" id="game-container">
     <div id="start-screen">
         <h2>အင်္ဂလိပ်စာ သင်ကြမယ်!</h2>
         <button class="btn-start" onclick="startGame()">ဂိမ်းစမည်</button>
     </div>
 
-    <h1>🌟 English Fun 🌟</h1>
+    <h2>🌟 English Fun 🌟</h2>
     <div id="score-text">Stars: 0</div>
-    
-    <div class="image-box">
-        <img id="main-img" src="" alt="Question">
+
+    <div class="image-box" id="img-box">
+        <img id="main-img">
     </div>
-    
-    <h3 id="question-text">ဒါ ဘာပုံလဲ?</h3>
-    
+
+    <h3 id="question-text"></h3>
     <div class="options" id="opt-container"></div>
-    <div id="msg" style="margin-top: 15px; font-weight: bold;"></div>
+    <div id="msg"></div>
 </div>
 
 <script>
-    const questions = [
-        { q: "ဒါ ဘာအရောင်လဲ?", img: "https://img.icons8.com/color/144/filled-circle.png", answers: [{a:"Red", c:true}, {a:"Blue", c:false}, {a:"Green", c:false}, {a:"Yellow", c:false}], color: "red" },
-        { q: "ဒါ ဘာသီးလဲ?", img: "https://img.icons8.com/color/144/apple.png", answers: [{a:"Apple", c:true}, {a:"Mango", c:false}, {a:"Orange", c:false}, {a:"Grape", c:false}] },
-        { q: "ဒါ ဘာကောင်လေးလဲ?", img: "https://img.icons8.com/color/144/dog.png", answers: [{a:"Cat", c:false}, {a:"Dog", c:true}, {a:"Rabbit", c:false}, {a:"Bird", c:false}] }
-    ];
+const questions = [
+    {
+        q: "ဒါ ဘာအရောင်လဲ?",
+        img: "https://img.icons8.com/color/144/filled-circle.png",
+        bg: "red",
+        answers: [
+            {a:"Red", c:true},
+            {a:"Blue", c:false},
+            {a:"Green", c:false},
+            {a:"Yellow", c:false}
+        ]
+    },
+    {
+        q: "ဒါ ဘာသီးလဲ?",
+        img: "https://img.icons8.com/color/144/apple.png",
+        answers: [
+            {a:"Apple", c:true},
+            {a:"Mango", c:false},
+            {a:"Orange", c:false},
+            {a:"Grape", c:false}
+        ]
+    },
+    {
+        q: "ဒါ ဘာကောင်လေးလဲ?",
+        img: "https://img.icons8.com/color/144/dog.png",
+        answers: [
+            {a:"Dog", c:true},
+            {a:"Cat", c:false},
+            {a:"Bird", c:false},
+            {a:"Rabbit", c:false}
+        ]
+    }
+];
 
-    let currentIdx = 0;
-    let score = 0;
+let idx = 0;
+let score = 0;
 
-    function startGame() {
-        document.getElementById('start-screen').style.display = 'none';
-        // iOS/Android အသံဖွင့်ရန် dummy sound စဖွင့်ခြင်း
-        speak(""); 
-        loadQ();
+function speak(text){
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = 0.8;
+    speechSynthesis.speak(u);
+}
+
+function startGame(){
+    document.getElementById("start-screen").style.display="none";
+    loadQ();
+}
+
+function loadQ(){
+    if(idx >= questions.length){
+        document.getElementById("game-container").innerHTML =
+        `<h2>🎉 Finished!<br>Stars: ${score}</h2>`;
+        return;
     }
 
-    function speak(text) {
-        const synth = window.speechSynthesis;
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-US';
-        utter.rate = 0.8;
-        synth.speak(utter);
-    }
+    const q = questions[idx];
+    document.getElementById("question-text").textContent = q.q;
+    document.getElementById("main-img").src = q.img;
 
-    function loadQ() {
-        if(currentIdx >= questions.length) {
-            document.getElementById('game-container').innerHTML = "<h2>ပြီးသွားပါပြီ! အမှတ်: " + score + "</h2>";
-            return;
-        }
-        
-        const qData = questions[currentIdx];
-        const imgElement = document.getElementById('main-img');
-        
-        // အရောင်မေးခွန်းအတွက် ပုံကို အရောင်ပြောင်းပေးခြင်း
-        if(qData.color) imgElement.style.filter = `drop-shadow(0 0 0 ${qData.color}) brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(5)`;
-        else imgElement.style.filter = "none";
+    document.getElementById("img-box").style.background =
+        q.bg ? q.bg : "#fff";
 
-        imgElement.src = qData.img;
-        document.getElementById('question-text').textContent = qData.q;
-        
-        const container = document.getElementById('opt-container');
-        container.innerHTML = "";
-        
-        qData.answers.forEach(ans => {
-            const btn = document.createElement('button');
-            btn.textContent = ans.a;
-            btn.onclick = () => {
-                speak(ans.a); // ခလုတ်နှိပ်တာနဲ့ အသံထွက်မယ်
-                if(ans.c) {
-                    score++;
-                    document.getElementById('score-text').textContent = "Stars: " + score;
-                    document.getElementById('msg').textContent = "✅ မှန်ပါတယ်!";
-                    currentIdx++;
-                    setTimeout(loadQ, 1500);
-                } else {
-                    document.getElementById('msg').textContent = "❌ မှားသွားတယ်၊ ပြန်ကြိုးစားပါ";
-                }
-            };
-            container.appendChild(btn);
-        });
-    }
+    const opt = document.getElementById("opt-container");
+    opt.innerHTML = "";
+    document.getElementById("msg").textContent = "";
+
+    q.answers.forEach(ans=>{
+        const b = document.createElement("button");
+        b.textContent = ans.a;
+        b.onclick = ()=>{
+            speak(ans.a);
+            if(ans.c){
+                score++;
+                idx++;
+                document.getElementById("score-text").textContent="Stars: "+score;
+                document.getElementById("msg").textContent="✅ Good job!";
+                setTimeout(loadQ,1000);
+            }else{
+                document.getElementById("msg").textContent="❌ Try again!";
+            }
+        };
+        opt.appendChild(b);
+    });
+}
 </script>
 
 </body>
